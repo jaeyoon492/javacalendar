@@ -1,15 +1,16 @@
 package jaeyoon.calendar;
 
+import java.text.ParseException;
 import java.util.*;
 
 public class Prompt {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         Prompt p = new Prompt();
         p.runPrompt();
     }
 
-    public void runPrompt() {
+    public void runPrompt() throws ParseException {
         displayInputMessage();
         Scanner scanner = new Scanner(System.in);
         Calendar cal = new Calendar();
@@ -18,8 +19,8 @@ public class Prompt {
         while (true) {
             System.out.println("명령(1, 2, 3, h, q)");
             String cmd = scanner.next();
-            if (cmd.equals("1")) cmdRegister();
-            else if (cmd.equals("2")) cmdSearch();
+            if (cmd.equals("1")) cmdRegister(scanner, cal);
+            else if (cmd.equals("2")) cmdSearch(scanner, cal);
             else if (cmd.equals("3")) printCal(scanner, delimeter, cal);
             else if (cmd.equals("h")) displayInputMessage();
             else if (cmd.equals("q")) break;
@@ -45,10 +46,35 @@ public class Prompt {
         cal.printCalendar(year, month, days);
     }
 
-    private void cmdSearch() {
+    private void cmdSearch(Scanner scanner, Calendar calendar) {
+        System.out.println("[일정 검색]");
+        System.out.println("날짜를 입력해 주세요(yyyy-mm-dd).");
+        String date = scanner.next();
+        String plan = "";
+        try {
+            plan = calendar.searchPlan(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            System.err.println("일정 검색중 오류가 발생하였습니다.");
+        }
+        System.out.println(plan);
+
     }
 
-    private void cmdRegister() {
+    private void cmdRegister(Scanner scanner, Calendar calendar) throws ParseException {
+        System.out.println("[새 일정 등록]");
+        System.out.println("날짜를 입력해 주세요(yyyy-mm-dd).");
+        String date = scanner.next();
+        String text = "";
+        System.out.println("일정을 입력해주세요. (문장의 끝에 ;을 입력해주세요.) ");
+        while (true) {
+            String word = scanner.next();
+            text += word + " ";
+            if (word.endsWith(";")) {
+                break;
+            }
+        }
+        calendar.registerPlan(date, text);
     }
 
     private void displayInputMessage() {
